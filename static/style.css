@@ -1,0 +1,123 @@
+/* Plain CSS, no build step. Colors live in the variables below. */
+
+:root {
+  --bg: #faf8f3;
+  --surface: #ffffff;
+  --ink: #1f1e1b;
+  --muted: #6b675e;
+  --line: #e4dfd3;
+  --accent: #1f6f5c;
+  --accent-ink: #ffffff;
+  --radius: 10px;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15171a;
+    --surface: #1d2024;
+    --ink: #ece9e1;
+    --muted: #9a968b;
+    --line: #2e3237;
+    --accent: #6fcfb4;
+    --accent-ink: #0f1a17;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 1rem/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+main {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 4rem 1.25rem 2rem;
+}
+
+h1, h2, h3 {
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  line-height: 1.2;
+}
+
+h1 { font-size: clamp(2.2rem, 6vw, 3.2rem); margin: 0 0 0.5rem; }
+h2 { font-size: 1.5rem; margin: 3rem 0 0.75rem; }
+h3 { font-size: 1.15rem; margin: 0 0 0.35rem; }
+
+a { color: var(--accent); text-underline-offset: 0.18em; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+
+.lede { font-size: 1.15rem; color: var(--muted); margin: 0 0 2.5rem; }
+
+/* Project cards */
+.cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  position: relative; /* anchors the stretched link */
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.card:hover, .card:focus-within { border-color: var(--accent); transform: translateY(-2px); }
+
+/* Make the whole card clickable via the title link. */
+.card-link { text-decoration: none; color: var(--ink); }
+.card-link::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius); }
+
+.card-desc { margin: 0 0 0.9rem; color: var(--muted); font-size: 0.95rem; }
+
+.card-meta {
+  margin: auto 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.chip {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-radius: 999px;
+  padding: 0.05rem 0.6rem;
+  font-weight: 600;
+}
+
+.source { position: relative; z-index: 1; margin-left: auto; } /* sits above the stretched link */
+
+.empty { color: var(--muted); font-style: italic; }
+code { font: 0.9em ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+.about { border-top: 1px solid var(--line); margin-top: 3rem; }
+.about h2 { margin-top: 2rem; }
+
+footer {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 3rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+footer p { margin: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card { transition: none; }
+  .card:hover, .card:focus-within { transform: none; }
+}

@@ -1,0 +1,62 @@
+name: Build and deploy homepage
+
+on:
+  # Rebuild whenever the homepage itself changes.
+  push:
+    branches: [main]
+  # Daily rebuild so newly created projects show up on their own.
+  # NOTE: GitHub auto-disables scheduled workflows after 60 days without repo
+  # activity. See the warning at the top of README.md.
+  schedule:
+    - cron: "17 9 * * *" # 09:17 UTC daily; off the hour to avoid peak-load delays
+  # The "rebuild now" button: Actions tab -> this workflow -> Run workflow.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let an in-flight deploy finish; queue the next one behind it.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  ZOLA_VERSION: "0.23.3"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Zola
+        run: |
+          curl -fsSL "https://github.com/getzola/zola/releases/download/v${ZOLA_VERSION}/zola-v${ZOLA_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin
+          zola --version
+
+      - name: Discover repos with GitHub Pages enabled
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Uncomment for opt-in mode: only repos tagged with this GitHub topic.
+          # REQUIRED_TOPIC: showcase
+        run: scripts/fetch-repos.sh # owner comes from GITHUB_REPOSITORY_OWNER
+
+      - name: Build site
+        run: zola build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

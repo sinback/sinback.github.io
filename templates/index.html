@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}{{ config.title }}{% endblock title %}
+
+{% block content %}
+  <header class="hero">
+    <h1>{{ section.title }}</h1>
+    <p class="lede">{{ section.description }}</p>
+  </header>
+
+  {# Written by scripts/fetch-repos.sh (CI runs it before `zola build`). #}
+  {% set projects = load_data(path="data/repos.json", required=false) %}
+
+  <section class="projects" aria-label="Projects">
+    {% if projects and projects.repos | length > 0 %}
+      <ul class="cards">
+        {% for repo in projects.repos | sort(attribute="pushed_at") | reverse %}
+          <li class="card">
+            <h3>
+              <a class="card-link" href="https://{{ projects.owner }}.github.io/{{ repo.name }}/">{{ repo.name }}</a>
+            </h3>
+            {% if repo.description %}
+              <p class="card-desc">{{ repo.description }}</p>
+            {% endif %}
+            <p class="card-meta">
+              {% if repo.language %}<span class="chip">{{ repo.language }}</span>{% endif %}
+              {% if repo.pushed_at %}<span>Updated {{ repo.pushed_at | date(format="%b %Y") }}</span>{% endif %}
+              <a class="source" href="{{ repo.html_url }}">Source</a>
+            </p>
+          </li>
+        {% endfor %}
+      </ul>
+    {% elif projects %}
+      <p class="empty">Nothing to show yet. Projects appear here once a public repo has GitHub Pages enabled.</p>
+    {% else %}
+      <p class="empty">No project data found. Run <code>scripts/fetch-repos.sh</code> to generate <code>data/repos.json</code> for local preview.</p>
+    {% endif %}
+  </section>
+
+  <section class="about">
+    {{ section.content | safe }}
+  </section>
+{% endblock content %}
+
+{% block footer %}
+  {% if projects and projects.generated_at %}
+    <p>Project list last refreshed {{ projects.generated_at | date(format="%Y-%m-%d") }}.</p>
+  {% endif %}
+{% endblock footer %}

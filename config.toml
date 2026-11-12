@@ -1,0 +1,11 @@
+# Site config. Docs: https://www.getzola.org/documentation/getting-started/configuration/
+
+# User site => served at the root of the github.io domain.
+# Change "sinback" if the GitHub username is different.
+base_url = "https://sinback.github.io"
+
+title = "sinback"
+description = "Public-facing projects by Sara Sinback, a software systems engineer."
+default_language = "en"
+
+build_search_index = false
