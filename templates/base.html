@@ -5,9 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ config.title }}{% endblock title %}</title>
   <meta name="description" content="{{ config.description }}">
+  <script>
+    // Runs before first paint so a saved light/dark choice doesn't flash.
+    // "system" (or nothing saved) leaves data-theme off and the CSS media query decides.
+    (function () {
+      try {
+        var saved = localStorage.getItem("theme");
+        if (saved === "light" || saved === "dark") {
+          document.documentElement.setAttribute("data-theme", saved);
+        }
+      } catch (e) { /* storage blocked (e.g. some private windows): stay on System */ }
+    })();
+  </script>
   <link rel="stylesheet" href="{{ get_url(path='style.css') }}">
+  <script src="{{ get_url(path='theme.js') }}" defer></script>
 </head>
 <body>
+  <button type="button" class="theme-toggle" data-mode="system" aria-label="Switch to light theme" title="Switch to light theme" hidden>
+    <svg class="icon-system" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    <svg class="icon-light" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    <svg class="icon-dark" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
   <main>
     {% block content %}{% endblock content %}
   </main>
