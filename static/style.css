@@ -1,5 +1,8 @@
 /* Plain CSS, no build step. Colors live in the variables below. */
 
+/* Theme resolution:
+   - no data-theme (System): follow prefers-color-scheme
+   - data-theme="light" / "dark": forced by the toggle (see theme.js) */
 :root {
   --bg: #faf8f3;
   --surface: #ffffff;
@@ -9,11 +12,11 @@
   --accent: #1f6f5c;
   --accent-ink: #ffffff;
   --radius: 10px;
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #15171a;
     --surface: #1d2024;
     --ink: #ece9e1;
@@ -21,7 +24,19 @@
     --line: #2e3237;
     --accent: #6fcfb4;
     --accent-ink: #0f1a17;
+    color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --surface: #1d2024;
+  --ink: #ece9e1;
+  --muted: #9a968b;
+  --line: #2e3237;
+  --accent: #6fcfb4;
+  --accent-ink: #0f1a17;
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -117,7 +132,47 @@ footer {
 }
 footer p { margin: 0; }
 
+/* Theme toggle: fixed in the top-right corner, icon shows the current choice */
+.theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.theme-toggle[hidden] { display: none; }
+.theme-toggle:hover { border-color: var(--accent); }
+.theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.theme-toggle svg {
+  grid-area: 1 / 1;
+  width: 1.2rem;
+  height: 1.2rem;
+  display: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.theme-toggle[data-mode="system"] .icon-system,
+.theme-toggle[data-mode="light"] .icon-light,
+.theme-toggle[data-mode="dark"] .icon-dark { display: block; }
+
 @media (prefers-reduced-motion: reduce) {
+  .theme-toggle { transition: none; }
   .card { transition: none; }
   .card:hover, .card:focus-within { transform: none; }
 }
